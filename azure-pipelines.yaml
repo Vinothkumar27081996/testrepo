@@ -45,9 +45,9 @@ stages:
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         backendServiceArm: 'githubsvccon'
-        backendAzureRmResourceGroupName: 'rg-tfstate'
-        backendAzureRmStorageAccountName: 'tfstatestorage001'
-        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmResourceGroupName: 'vinothrg1'
+        backendAzureRmStorageAccountName: 'vinothrg1storage'
+        backendAzureRmContainerName: 'stgtfstate'
         backendAzureRmKey: 'storageaccount.tfstate'
 
     - task: TerraformTaskV4@4
