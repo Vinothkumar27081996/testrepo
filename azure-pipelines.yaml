@@ -44,7 +44,7 @@ stages:
         provider: 'azurerm'
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-        backendServiceArm: '<Your-Service-Connection-Name>'
+        backendServiceArm: 'githubsvccon'
         backendAzureRmResourceGroupName: 'rg-tfstate'
         backendAzureRmStorageAccountName: 'tfstatestorage001'
         backendAzureRmContainerName: 'tfstate'
