@@ -1,0 +1,71 @@
+trigger:
+- main   # change branch if needed
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  # Customize these for your environment
+  RESOURCE_GROUP_NAME: 'rg-demo'
+  STORAGE_ACCOUNT_NAME: 'vinothstorage001'  # must be globally unique, lowercase, 3-24 chars
+  LOCATION: 'eastus'
+
+stages:
+- stage: Terraform
+  displayName: 'Deploy Azure Storage Account'
+  jobs:
+  - job: TerraformJob
+    displayName: 'Terraform Init, Plan, Apply'
+    steps:
+
+    - task: Checkout@1
+      displayName: 'Checkout source code'
+
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: '1.8.5'   # pin version
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Init'
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        backendServiceArm: '<Your-Service-Connection-Name>'
+        backendAzureRmResourceGroupName: 'rg-tfstate'
+        backendAzureRmStorageAccountName: 'tfstatestorage001'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'storageaccount.tfstate'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Validate'
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Plan'
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        environmentServiceNameAzureRM: 'githubsvccon'
+        commandOptions: >
+          -var "resource_group_name=$(RESOURCE_GROUP_NAME)"
+          -var "storage_account_name=$(STORAGE_ACCOUNT_NAME)"
+          -var "location=$(LOCATION)"
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Apply'
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        environmentServiceNameAzureRM: 'githubsvccon'
+        commandOptions: >
+          -auto-approve
+          -var "resource_group_name=$(RESOURCE_GROUP_NAME)"
+          -var "storage_account_name=$(STORAGE_ACCOUNT_NAME)"
+          -var "location=$(LOCATION)"
