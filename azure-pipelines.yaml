@@ -1,16 +1,28 @@
 trigger:
-- main   # change branch if needed
+- main
+
+resources:
+  repositories:
+  - repository: self
+    type: github
+    name: Vinothkumar27081996/testrepo
+    ref: main
 
 pool:
   vmImage: 'ubuntu-latest'
-
 variables:
   # Customize these for your environment
   RESOURCE_GROUP_NAME: 'rg-demo'
   STORAGE_ACCOUNT_NAME: 'vinothstorage001'  # must be globally unique, lowercase, 3-24 chars
   LOCATION: 'eastus'
-
 stages:
+- stage: Terraform
+  displayName: 'Deploy Azure Storage Account'
+  jobs:
+  - job: TerraformJob
+    steps:
+    - checkout: self
+
 - stage: Terraform
   displayName: 'Deploy Azure Storage Account'
   jobs:
